@@ -4,7 +4,7 @@ SET(SOURCES ui_Screen1.c
     ui_comp_hook.c
     ui_helpers.c
     ui_img_base_png.c
-    ui_img_1429767708.c
+    ui_img_1656541541.c
     ui_img_admirador_png.c
     ui_img_basecarga_png.c
     fonts/ui_font_light10.c

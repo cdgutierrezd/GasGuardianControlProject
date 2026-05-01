@@ -17,8 +17,8 @@ lv_obj_t * ui_uiLabelState = NULL;
 lv_obj_t * ui_Container2 = NULL;
 lv_obj_t * ui_uiBtnValve = NULL;
 lv_obj_t * ui_Panel2 = NULL;
+lv_obj_t * ui_Image2 = NULL;
 lv_obj_t * ui_Label5 = NULL;
-lv_obj_t * ui_Image3 = NULL;
 lv_obj_t * ui_Container3 = NULL;
 lv_obj_t * ui_uiBtnExtractor = NULL;
 lv_obj_t * ui_Panel3 = NULL;
@@ -160,27 +160,27 @@ void ui_Screen1_screen_init(void)
     lv_obj_clear_flag(ui_Panel2, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_obj_set_style_radius(ui_Panel2, 50, LV_PART_MAIN | LV_STATE_DEFAULT);
 
+    ui_Image2 = lv_img_create(ui_Container2);
+    lv_img_set_src(ui_Image2, &ui_img_1656541541);
+    lv_obj_set_width(ui_Image2, LV_SIZE_CONTENT);   /// 64
+    lv_obj_set_height(ui_Image2, LV_SIZE_CONTENT);    /// 64
+    lv_obj_set_x(ui_Image2, 0);
+    lv_obj_set_y(ui_Image2, -7);
+    lv_obj_set_align(ui_Image2, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_Image2, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
+    lv_obj_clear_flag(ui_Image2, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_img_set_zoom(ui_Image2, 180);
+
     ui_Label5 = lv_label_create(ui_Container2);
     lv_obj_set_width(ui_Label5, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Label5, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(ui_Label5, 0);
     lv_obj_set_y(ui_Label5, lv_pct(35));
     lv_obj_set_align(ui_Label5, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_Label5, "VALVE");
+    lv_label_set_text(ui_Label5, "GAS");
     lv_obj_set_style_text_color(ui_Label5, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_Label5, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_Label5, &ui_font_normal12, LV_PART_MAIN | LV_STATE_DEFAULT);
-
-    ui_Image3 = lv_img_create(ui_Container2);
-    lv_img_set_src(ui_Image3, &ui_img_1429767708);
-    lv_obj_set_width(ui_Image3, LV_SIZE_CONTENT);   /// 128
-    lv_obj_set_height(ui_Image3, LV_SIZE_CONTENT);    /// 128
-    lv_obj_set_x(ui_Image3, 0);
-    lv_obj_set_y(ui_Image3, -7);
-    lv_obj_set_align(ui_Image3, LV_ALIGN_CENTER);
-    lv_obj_add_flag(ui_Image3, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
-    lv_obj_clear_flag(ui_Image3, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-    lv_img_set_zoom(ui_Image3, 60);
 
     ui_Container3 = lv_obj_create(ui_Container1);
     lv_obj_remove_style_all(ui_Container3);
@@ -195,7 +195,6 @@ void ui_Screen1_screen_init(void)
     lv_obj_set_width(ui_uiBtnExtractor, 70);
     lv_obj_set_height(ui_uiBtnExtractor, 70);
     lv_obj_set_align(ui_uiBtnExtractor, LV_ALIGN_CENTER);
-    lv_obj_add_state(ui_uiBtnExtractor, LV_STATE_CHECKED);       /// States
     lv_obj_add_flag(ui_uiBtnExtractor, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
     lv_obj_clear_flag(ui_uiBtnExtractor, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_obj_set_style_radius(ui_uiBtnExtractor, 20, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -301,8 +300,8 @@ void ui_Screen1_screen_destroy(void)
     ui_Container2 = NULL;
     ui_uiBtnValve = NULL;
     ui_Panel2 = NULL;
+    ui_Image2 = NULL;
     ui_Label5 = NULL;
-    ui_Image3 = NULL;
     ui_Container3 = NULL;
     ui_uiBtnExtractor = NULL;
     ui_Panel3 = NULL;

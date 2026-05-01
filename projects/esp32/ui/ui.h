@@ -39,7 +39,7 @@ extern lv_obj_t * ui____initial_actions0;
 
 // IMAGES AND IMAGE SETS
 LV_IMG_DECLARE(ui_img_base_png);    // assets/base.png
-LV_IMG_DECLARE(ui_img_1429767708);    // assets/grifo (1).png
+LV_IMG_DECLARE(ui_img_1656541541);    // assets/tanque-de-gas.png
 LV_IMG_DECLARE(ui_img_admirador_png);    // assets/admirador.png
 LV_IMG_DECLARE(ui_img_basecarga_png);    // assets/baseCarga.png
 
