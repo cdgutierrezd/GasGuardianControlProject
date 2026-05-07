@@ -45,44 +45,51 @@ void DisplayManager::showLoadingScreen() {
 // ----------------------
 // UPDATE UI (TU LÓGICA ACTUAL)
 // ----------------------
-void DisplayManager::update(int gasValue, bool valveClosed) {
+void DisplayManager::update(int gasValue, bool valveClosed, bool gasDanger) {
 
-  lv_timer_handler();
-  lv_tick_inc(5);
 
   static unsigned long lastUpdate = 0;
 
   if (millis() - lastUpdate < 50) return;
   lastUpdate = millis();
 
-  // SOLO ACTUALIZA SI ESTÁS EN SCREEN PRINCIPAL
   if (screenState != 0) return;
 
   // LABEL GAS
   lv_label_set_text_fmt(ui_uiLabelGasValue, "%d", gasValue);
 
   // ARC
-  int porcentaje = (gasValue * 100) / 800;
+  // 🔥 ESCALADO REAL
+  int BASE = 0;
+  int PELIGRO = 1500;
+
+  int porcentaje = (gasValue - BASE) * 100 / (PELIGRO - BASE);
+
+  if (porcentaje < 0) porcentaje = 0;
   if (porcentaje > 100) porcentaje = 100;
 
-  lv_arc_set_value(ui_uiArcGas, porcentaje);
+  // 🔥 SUAVIZADO
+  static int porcentajeSuave = 0;
+  porcentajeSuave = porcentajeSuave * 0.8 + porcentaje * 0.2;
 
-  // ESTADO
-  if (gasValue > 600) {
+  lv_arc_set_value(ui_uiArcGas, porcentajeSuave);
+
+  // 🔥 ESTADO (USA gasDanger)
+  if (gasDanger) {
     lv_label_set_text(ui_uiLabelState, "ALERTA");
   } else {
     lv_label_set_text(ui_uiLabelState, "NORMAL");
   }
 
-  // BOTÓN VÁLVULA
-  if (valveClosed) {
+  // 🔥 BOTÓN VÁLVULA
+  if (!valveClosed) {
     lv_obj_add_state(ui_uiBtnValve, LV_STATE_CHECKED);
   } else {
     lv_obj_clear_state(ui_uiBtnValve, LV_STATE_CHECKED);
   }
 
-  // BOTÓN EXTRACTOR
-  if (gasValue > 600) {
+  // 🔥 BOTÓN EXTRACTOR (SINCRONIZADO)
+  if (gasDanger) {
     lv_obj_add_state(ui_uiBtnExtractor, LV_STATE_CHECKED);
   } else {
     lv_obj_clear_state(ui_uiBtnExtractor, LV_STATE_CHECKED);

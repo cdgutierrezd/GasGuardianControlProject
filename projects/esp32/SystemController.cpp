@@ -24,8 +24,8 @@ void SystemController::begin() {
   pinMode(alarmRelayPin, OUTPUT);
 
   digitalWrite(valveRelayPin, HIGH);      // 🔴 válvula CERRADA
-  digitalWrite(extractorRelayPin, LOW);   // extractor apagado
-  digitalWrite(alarmRelayPin, HIGH);
+  digitalWrite(extractorRelayPin, HIGH);  // extractor apagado
+  digitalWrite(alarmRelayPin, HIGH);      // alarma apagada
 }
 
 // ----------------------
@@ -37,28 +37,39 @@ void SystemController::update(GasManager &gas, int threshold) {
   int buttonState = digitalRead(buttonPin);
 
   // ----------------------
-  // 🌀 EXTRACTOR (automático)
-  // ----------------------
-  digitalWrite(extractorRelayPin, gasDanger ? LOW : HIGH);
-  digitalWrite(alarmRelayPin, gasDanger ? LOW : HIGH);
-
-  // ----------------------
-  // 🔴 GAS (evento: solo cuando entra en peligro)
+  // 🔴 GAS (evento sincronizado)
   // ----------------------
   if (gasDanger && !gasWasDanger) {
-    digitalWrite(valveRelayPin, HIGH);
+
+    digitalWrite(valveRelayPin, HIGH);       // cerrar válvula
+    digitalWrite(extractorRelayPin, LOW);    // prender extractor
+    digitalWrite(alarmRelayPin, LOW);        // prender alarma
+
     valveClosed = true;
 
-    Serial.print("[AUTO] Gas peligroso → Válvula CERRADA: ");
+    Serial.print("[AUTO] Gas peligroso → TODO ACTIVADO: ");
     Serial.println(gas.getValue());
   }
 
+  // ----------------------
+  // 🔄 GAS vuelve a normal
+  // ----------------------
+  if (!gasDanger && gasWasDanger) {
+
+    digitalWrite(extractorRelayPin, HIGH);   // apagar extractor
+    digitalWrite(alarmRelayPin, HIGH);       // apagar alarma
+
+    Serial.println("[AUTO] Gas normal → extractor apagado");
+  }
+
+  // 🔥 IMPORTANTE: actualizar estado
   gasWasDanger = gasDanger;
 
   // ----------------------
   // 🔘 BOTÓN (solo cerrar)
   // ----------------------
   if (buttonState == LOW) {
+
     digitalWrite(valveRelayPin, HIGH);
     valveClosed = true;
 

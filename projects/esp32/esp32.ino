@@ -6,6 +6,11 @@
 #include "DisplayManager.h"
 #include "DisplayDriver.h"
 
+
+// ----------------------
+// CONFIG GAS
+// ----------------------
+#define GAS_PELIGRO 2000
 // ----------------------
 // WIFI CONFIG
 // ----------------------
@@ -137,14 +142,15 @@ void loop() {
       espNowStarted = true;
     }
 
-    // SISTEMA
-    controller.update(gas, 600);
+  // SISTEMA
 
-    int gasValue = gas.getValue();
-    bool valveClosed = controller.isValveClosed();
+  controller.update(gas, GAS_PELIGRO);
 
-    display.update(gasValue, valveClosed);
+  int gasValue = gas.getValue();
+  bool valveClosed = controller.isValveClosed();
 
+  bool gasDanger = gas.isDanger(GAS_PELIGRO);
+  display.update(gasValue, valveClosed, gasDanger);
     // WIFI UI
     display.updateWifiInfo(
       WiFi.status() == WL_CONNECTED,

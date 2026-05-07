@@ -11,7 +11,7 @@ class SystemController;
 class DisplayManager {
   public:
     void begin();
-    void update(int gasValue, bool valveClosed);
+    void update(int gasValue, bool valveClosed, bool gasDanger);
     void updateWifiInfo(bool connected, String ssid, String ip);
 
     // ----------------------

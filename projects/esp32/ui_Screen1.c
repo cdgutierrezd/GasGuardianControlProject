@@ -177,7 +177,7 @@ void ui_Screen1_screen_init(void)
     lv_obj_set_x(ui_Label5, 0);
     lv_obj_set_y(ui_Label5, lv_pct(35));
     lv_obj_set_align(ui_Label5, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_Label5, "GAS");
+    lv_label_set_text(ui_Label5, "VAL. GAS");
     lv_obj_set_style_text_color(ui_Label5, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_Label5, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_Label5, &ui_font_normal12, LV_PART_MAIN | LV_STATE_DEFAULT);
