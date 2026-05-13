@@ -23,9 +23,11 @@ void SystemController::begin() {
   pinMode(extractorRelayPin, OUTPUT);
   pinMode(alarmRelayPin, OUTPUT);
 
-  digitalWrite(valveRelayPin, HIGH);      // 🔴 válvula CERRADA
+  digitalWrite(valveRelayPin, LOW);      // 🔴 válvula CERRADA
   digitalWrite(extractorRelayPin, HIGH);  // extractor apagado
   digitalWrite(alarmRelayPin, HIGH);      // alarma apagada
+
+  valveClosed = false;
 }
 
 // ----------------------
@@ -68,7 +70,7 @@ void SystemController::update(GasManager &gas, int threshold) {
   // ----------------------
   // 🔘 BOTÓN (solo cerrar)
   // ----------------------
-  if (buttonState == LOW) {
+  if (buttonState == HIGH) {
 
     digitalWrite(valveRelayPin, HIGH);
     valveClosed = true;
