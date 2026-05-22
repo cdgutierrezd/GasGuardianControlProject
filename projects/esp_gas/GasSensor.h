@@ -3,12 +3,14 @@
 
 class GasSensor {
   private:
-    int pin;
-    int samples;
+    int pin;      // Pin analógico del sensor MQ-6
+    int samples;  // Número de muestras para promediar
 
   public:
+    // Constructor que recibe el pin y número de muestras (por defecto 50)
     GasSensor(int pin, int samples = 50);
 
+    // Leer valor promediado del sensor
     int read();
 };
 
