@@ -23,9 +23,9 @@ void SystemController::begin() {
   pinMode(extractorRelayPin, OUTPUT);
   pinMode(alarmRelayPin, OUTPUT);
 
-  digitalWrite(valveRelayPin, LOW);      // 🔴 válvula CERRADA
-  digitalWrite(extractorRelayPin, HIGH);  // extractor apagado
-  digitalWrite(alarmRelayPin, HIGH);      // alarma apagada
+  digitalWrite(valveRelayPin, LOW);      // 🟢 Válvula ABIERTA por defecto al iniciar (Relé ON)
+  digitalWrite(extractorRelayPin, HIGH);  // Extractor apagado
+  digitalWrite(alarmRelayPin, HIGH);       // Alarma apagada
 
   valveClosed = false;
 }
@@ -38,14 +38,16 @@ void SystemController::update(GasManager &gas, int threshold) {
   bool gasDanger = gas.isDanger(threshold);
   int buttonState = digitalRead(buttonPin);
 
+  // 🧠 MEMORIA INTERNA: Recuerda si el cierre actual fue provocado por el botón
+  static bool cerradoPorBoton = false;
+
   // ----------------------
-  // 🔴 GAS (evento sincronizado)
+  // 🔴 GAS (Evento sincronizado de peligro)
   // ----------------------
   if (gasDanger && !gasWasDanger) {
-
-    digitalWrite(valveRelayPin, HIGH);       // cerrar válvula
-    digitalWrite(extractorRelayPin, LOW);    // prender extractor
-    digitalWrite(alarmRelayPin, LOW);        // prender alarma
+    digitalWrite(valveRelayPin, HIGH);       // Cerrar válvula (Relé OFF)
+    digitalWrite(extractorRelayPin, LOW);    // Prender extractor
+    digitalWrite(alarmRelayPin, LOW);        // Prender alarma
 
     valveClosed = true;
 
@@ -57,27 +59,44 @@ void SystemController::update(GasManager &gas, int threshold) {
   // 🔄 GAS vuelve a normal
   // ----------------------
   if (!gasDanger && gasWasDanger) {
+    digitalWrite(extractorRelayPin, HIGH);   // Apagar extractor
+    digitalWrite(alarmRelayPin, HIGH);       // Apagar alarma
 
-    digitalWrite(extractorRelayPin, HIGH);   // apagar extractor
-    digitalWrite(alarmRelayPin, HIGH);       // apagar alarma
-
-    Serial.println("[AUTO] Gas normal → extractor apagado");
+    // NOTA SEGURIDAD: La válvula permanece CERRADA. 
+    // Solo se reabrirá mediante orden explícita de la App o ciclando el botón manual.
+    Serial.println("[AUTO] Gas normal → Extractor y alarma apagados. Válvula segura (Cerrada).");
   }
 
-  // 🔥 IMPORTANTE: actualizar estado
+  // 🔥 IMPORTANTE: Actualizar estado de referencia del gas
   gasWasDanger = gasDanger;
 
   // ----------------------
-  // 🔘 BOTÓN (solo cerrar)
+  // 🔘 BOTÓN (Cierre por emergencia y Apertura al soltar)
   // ----------------------
   if (buttonState == HIGH) {
-
-    digitalWrite(valveRelayPin, HIGH);
-    valveClosed = true;
-
-    Serial.println("[BOTÓN] Válvula CERRADA");
-
-    delay(300); // anti rebote simple
+    // Si el botón está activo y aún no habíamos registrado este cierre manual...
+    if (!cerradoPorBoton) {
+      digitalWrite(valveRelayPin, HIGH); // Apagar relé -> Válvula CERRADA
+      valveClosed = true;
+      cerradoPorBoton = true;            // El botón toma la autoría del bloqueo
+      Serial.println("[BOTÓN] Emergencia manual activa → Válvula CERRADA");
+    }
+  } 
+  else {
+    // Si el botón vuelve a su estado de reposo (LOW) y él fue quien provocó el cierre...
+    if (cerradoPorBoton) {
+      // Condición crítica: Solo rearmamos si el sensor confirma que el aire está limpio
+      if (!gasDanger) {
+        digitalWrite(valveRelayPin, LOW); // Encender relé -> Válvula ABIERTA
+        valveClosed = false;
+        Serial.println("[BOTÓN] Emergencia liberada → Válvula REABIERTA");
+      } else {
+        Serial.println("[BOTÓN] Intento de rearme cancelado: Aún se detecta peligro de GAS");
+      }
+      
+      // Limpiamos la bandera en cualquier caso al soltar el botón
+      cerradoPorBoton = false; 
+    }
   }
 }
 
@@ -92,10 +111,7 @@ bool SystemController::isValveClosed() {
 // APP
 // ----------------------
 void SystemController::setValve(bool closed) {
-
   valveClosed = closed;
-
   digitalWrite(valveRelayPin, closed ? HIGH : LOW);
-
   Serial.println(closed ? "[APP] Válvula CERRADA" : "[APP] Válvula ABIERTA");
 }
